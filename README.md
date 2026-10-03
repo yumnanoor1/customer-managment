@@ -65,3 +65,21 @@ npm run dev
 - **React state management:** `useState`, `useMemo` and `useCallback` for lists, search, modals and toasts.
 - **Next.js:** App Router pages, layouts and client components.
 - **Responsive UI:** Tailwind breakpoints and a consistent colour palette.
+
+## Day 3 Improvements
+- **Auth:** Supabase email/password login (`/login`), route guard, logout. RLS now allows only logged-in users.
+- **Pagination + city filter + debounced search**, all done in the database query.
+- **Customer details page:** `/customers/[id]`.
+- **Better validation:** shared `lib/validation.ts`, input normalisation, duplicate-email detection (unique index).
+- **Data layer:** `lib/customers.ts` holds every query; components never call Supabase directly.
+
+### Project layout
+```
+app/            pages (dashboard, customers, customers/[id], login)
+components/     reusable UI (Table, Form, Pagination, StatsCards, AuthGuard...)
+lib/            supabase client, data layer (customers.ts), validation
+supabase/       schema.sql (fresh setup), migration-day3.sql (upgrade from Day 2)
+```
+
+### Upgrading from Day 2
+Run `supabase/migration-day3.sql` in the Supabase SQL Editor. In Supabase → Authentication → Providers, keep Email enabled. For quick testing you can turn off "Confirm email".

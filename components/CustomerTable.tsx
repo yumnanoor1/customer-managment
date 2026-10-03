@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Pencil, Trash2, Mail, Phone, MapPin } from "lucide-react";
 import type { Customer } from "@/types/customer";
 
@@ -52,7 +53,7 @@ export default function CustomerTable({ customers, onEdit, onDelete }: Props) {
                 <td className="px-5 py-3">
                   <div className="flex items-center gap-3">
                     <Avatar name={c.name} />
-                    <span className="font-medium">{c.name}</span>
+                    <Link href={`/customers/${c.id}`} className="font-medium hover:text-truffle hover:underline">{c.name}</Link>
                   </div>
                 </td>
                 <td className="px-5 py-3">{c.phone}</td>
@@ -72,7 +73,7 @@ export default function CustomerTable({ customers, onEdit, onDelete }: Props) {
             <div className="flex items-center justify-between gap-3">
               <div className="flex min-w-0 items-center gap-3">
                 <Avatar name={c.name} />
-                <span className="truncate font-medium">{c.name}</span>
+                <Link href={`/customers/${c.id}`} className="truncate font-medium hover:underline">{c.name}</Link>
               </div>
               <Actions c={c} onEdit={onEdit} onDelete={onDelete} />
             </div>

@@ -9,9 +9,12 @@ create table if not exists public.customers (
   created_at timestamptz not null default now()
 );
 
+create unique index if not exists customers_email_unique on public.customers (lower(email));
+create index if not exists customers_city_idx on public.customers (lower(city));
+create index if not exists customers_created_at_idx on public.customers (created_at desc);
+
 alter table public.customers enable row level security;
 
--- Open policy so the anon key can do CRUD (fine for a demo/assignment).
--- For production, restrict this to authenticated users.
-create policy "Allow anon CRUD on customers" on public.customers
-  for all using (true) with check (true);
+-- Only logged-in users can read or change customers.
+create policy "Authenticated CRUD" on public.customers
+  for all to authenticated using (true) with check (true);

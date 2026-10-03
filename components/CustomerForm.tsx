@@ -2,30 +2,12 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import type { Customer, CustomerInput } from "@/types/customer";
-
-type Errors = Partial<Record<keyof CustomerInput, string>>;
-
-export function validate(v: CustomerInput): Errors {
-  const e: Errors = {};
-  const name = v.name.trim();
-  if (!name) e.name = "Customer name is required.";
-  else if (!/^\p{L}[\p{L}\s.'-]{1,59}$/u.test(name)) e.name = "Enter a valid name (letters only, 2–60 characters).";
-
-  const digits = v.phone.replace(/\D/g, "");
-  if (!v.phone.trim()) e.phone = "Phone is required.";
-  else if (!/^\+?[\d\s\-()]+$/.test(v.phone.trim()) || digits.length < 7 || digits.length > 15)
-    e.phone = "Enter a valid phone number (7–15 digits, e.g. +92 300 1234567).";
-
-  if (!v.email.trim()) e.email = "Email is required.";
-  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.email.trim())) e.email = "Enter a valid email address.";
-
-  if (!v.city.trim()) e.city = "City is required.";
-  return e;
-}
+import { validate, normalize, type Errors } from "@/lib/validation";
 
 interface Props {
   customer?: Customer | null;
   saving: boolean;
+  serverError?: string | null;
   onSubmit: (v: CustomerInput) => void;
   onCancel: () => void;
 }
@@ -37,7 +19,7 @@ const fields: { key: keyof CustomerInput; label: string; type: string; placehold
   { key: "city", label: "City", type: "text", placeholder: "Islamabad" },
 ];
 
-export default function CustomerForm({ customer, saving, onSubmit, onCancel }: Props) {
+export default function CustomerForm({ customer, saving, serverError, onSubmit, onCancel }: Props) {
   const [values, setValues] = useState<CustomerInput>({
     name: customer?.name ?? "", phone: customer?.phone ?? "", email: customer?.email ?? "", city: customer?.city ?? "",
   });
@@ -48,7 +30,7 @@ export default function CustomerForm({ customer, saving, onSubmit, onCancel }: P
     const errs = validate(values);
     setErrors(errs);
     if (Object.keys(errs).length === 0)
-      onSubmit({ name: values.name.trim(), phone: values.phone.trim(), email: values.email.trim(), city: values.city.trim() });
+      onSubmit(normalize(values));
   };
 
   return (
@@ -76,6 +58,7 @@ export default function CustomerForm({ customer, saving, onSubmit, onCancel }: P
             </div>
           ))}
         </div>
+        {serverError && <p role="alert" className="mt-4 rounded-xl bg-truffle px-3 py-2 text-sm font-medium text-palladian">{serverError}</p>}
         <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <button type="button" onClick={onCancel}
             className="h-11 rounded-xl border border-oatmeal px-5 text-sm font-medium hover:bg-oatmeal">Cancel</button>
